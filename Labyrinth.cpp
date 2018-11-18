@@ -1,13 +1,23 @@
 #include "Labyrinth.h"
 
-
+#define UP 119
+#define RIGHT 100
+#define DOWN 115
+#define LEFT 97
+#define PLUS '+'
+#define DOT '.'
+#define FIRST_PLAYER '1'
+#define SECOND_PLAYER '2'
+#define WALL '|'
+#define UNKNOWN_PLACE '*'
+#define KNOWN_PLACE ' '
 void Labyrinth::print_labyrinth()
 {
-	for (int i = 0; i<this->rows; i++)
+	for (int i = 0; i<this->Irows_; i++)
 	{
-		for (int j = 0; j<this->cols; j++)
+		for (int j = 0; j<this->Icols_; j++)
 		{
-			cout << this->labyrinth_for_player[i][j];
+			cout << this->Clabyrinth_for_player_[i][j];
 		}
 		cout << endl;
 	}
@@ -16,7 +26,7 @@ void Labyrinth::print_labyrinth()
 }
 bool Labyrinth::wall_check(int y,int x) 
 {
-	if (this->real_labyrinth[y][x] == "|")
+	if (this->Creal_labyrinth_[y][x] == WALL)
 	{
 		system("cls");
 		this->print_labyrinth();
@@ -27,7 +37,7 @@ bool Labyrinth::wall_check(int y,int x)
 }
 bool Labyrinth::player_check(int y, int x)
 {
-	if (this->labyrinth_for_player[y][x] == "1" || this->labyrinth_for_player[y][x] == "2")
+	if (this->Clabyrinth_for_player_[y][x] == FIRST_PLAYER || this->Clabyrinth_for_player_[y][x] == SECOND_PLAYER)
 	{
 		system("cls");
 		this->print_labyrinth();
@@ -35,33 +45,33 @@ bool Labyrinth::player_check(int y, int x)
 	}
 	return false;
 }
-vector<vector<string>> Labyrinth::get_real_labyrinth() {return this->solution_map;}
+vector<vector<unsigned char>> Labyrinth::get_real_labyrinth() {return this->Csolution_map_;}
 void Labyrinth::fill_labyrinth() 
 {
 	srand(time(NULL));
-	this->real_labyrinth.resize(this->rows, vector<string>(this->cols, "*"));
+	this->Creal_labyrinth_.resize(this->Irows_, vector<unsigned char>(this->Icols_, UNKNOWN_PLACE));
 	int random;
-	for (int i = 0; i < this->rows; i++)
+	for (int i = 0; i < this->Irows_; i++)
 	{
-		this->count_walls = this->cols / 2.5;
-		for (int j = 0; j < this->cols; j++)
+		this->Icount_walls_ = this->Icols_ / 2.5;
+		for (int j = 0; j < this->Icols_; j++)
 		{
-			random = 1 + rand() % (this->cols - 2);
+			random = 1 + rand() % (this->Icols_ - 2);
 			
-			if (this->count_walls != 0 && random!=this->win_point_x )
+			if (this->Icount_walls_ != 0 && random!=this->Iwin_point_x_ )
 			{
-				this->real_labyrinth[i][random] = "|";
-				this->count_walls--;
+				this->Creal_labyrinth_[i][random] = WALL;
+				this->Icount_walls_--;
 			}		
 		}
 	}
 }
 void Labyrinth::check()
 {
-	if (this->y==this->win_point_y && this->x==this->win_point_x) 
+	if (this->Iy_==this->Iwin_point_y_ && this->Ix_==this->Iwin_point_x_) 
 	{
 		system("cls");
-		if (this->player_string == "1" ) 
+		if (this->player_string_ == FIRST_PLAYER ) 
 		{
 			cout << "You won" << endl;
 		}
@@ -73,70 +83,70 @@ void Labyrinth::check()
 }
 pair<int,int> Labyrinth::move_character(int arrow,int y,int x, int player)
 {
-	this->y = y;
-	this->x = x;
-	this->player_string = to_string(player);
+	this->Iy_ = y;
+	this->Ix_ = x;
+	this->player_string_ = player+'0';
 	
 	switch (arrow) 
 	{
-	case 119 : //w
-		if (this->y > 0 && !this->player_check(this->y - 1, this->x))
+	case UP : //w
+		if (this->Iy_ > 0 && !this->player_check(this->Iy_ - 1, this->Ix_))
 		{
-			if (this->wall_check(this->y-1, this->x))
+			if (this->wall_check(this->Iy_-1, this->Ix_))
 			{
-				this->labyrinth_for_player[this->y-1][this->x] = "|";
+				this->Clabyrinth_for_player_[this->Iy_-1][this->Ix_] = WALL;
 			}
 			else 
 			{
-				this->labyrinth_for_player[this->y - 1][this->x] = player_string;
-				this->labyrinth_for_player[this->y][this->x] = " ";
-				this->y--;
+				this->Clabyrinth_for_player_[this->Iy_ - 1][this->Ix_] = player_string_;
+				this->Clabyrinth_for_player_[this->Iy_][this->Ix_] = KNOWN_PLACE;
+				this->Iy_--;
 			}
 		}
 		break;
-	case 97: //a
-		if (this->x > 0 && !this->player_check(this->y, this->x - 1))
+	case LEFT: //a
+		if (this->Ix_ > 0 && !this->player_check(this->Iy_, this->Ix_ - 1))
 		{
-			if (this->wall_check(this->y, this->x - 1))
+			if (this->wall_check(this->Iy_, this->Ix_ - 1))
 			{
-				this->labyrinth_for_player[this->y][this->x - 1] = "|";
+				this->Clabyrinth_for_player_[this->Iy_][this->Ix_ - 1] = WALL;
 			}
 			else 
 			{
-				this->labyrinth_for_player[this->y][this->x - 1] = player_string;
-				this->labyrinth_for_player[this->y][this->x] = " ";
-				this->x--;
+				this->Clabyrinth_for_player_[this->Iy_][this->Ix_ - 1] = player_string_;
+				this->Clabyrinth_for_player_[this->Iy_][this->Ix_] = KNOWN_PLACE;
+				this->Ix_--;
 			}
 		}
 		break;
-	case 115: //s
-		if(this->y < this->rows-1  && !this->player_check(this->y + 1, this->x))
+	case DOWN: //s
+		if(this->Iy_ < this->Irows_-1  && !this->player_check(this->Iy_ + 1, this->Ix_))
 		{
-			if (this->wall_check(this->y+1, this->x))
+			if (this->wall_check(this->Iy_+1, this->Ix_))
 			{
-				this->labyrinth_for_player[this->y+1][this->x] = "|";
+				this->Clabyrinth_for_player_[this->Iy_+1][this->Ix_] = WALL;
 			}
 			else 
 			{
-				this->labyrinth_for_player[this->y + 1][this->x] = player_string;
-				this->labyrinth_for_player[this->y][this->x] = " ";
-				this->y++;
+				this->Clabyrinth_for_player_[this->Iy_ + 1][this->Ix_] = player_string_;
+				this->Clabyrinth_for_player_[this->Iy_][this->Ix_] = KNOWN_PLACE;
+				this->Iy_++;
 			}
 		}
 		
 		break;
-	case 100: //d
-		if (this->x<this->cols-1 && !this->player_check(this->y, this->x + 1))
+	case RIGHT: //d
+		if (this->Ix_<this->Icols_-1 && !this->player_check(this->Iy_, this->Ix_ + 1))
 		{
-			if(this->wall_check(this->y,this->x+1)) 
+			if(this->wall_check(this->Iy_,this->Ix_+1)) 
 			{
-				this->labyrinth_for_player[this->y][this->x+1] = "|";
+				this->Clabyrinth_for_player_[this->Iy_][this->Ix_+1] = WALL;
 			}
 			else
 			{
-				this->labyrinth_for_player[this->y][this->x + 1] = player_string;
-				this->labyrinth_for_player[this->y][this->x] = " ";
-				this->x++;
+				this->Clabyrinth_for_player_[this->Iy_][this->Ix_ + 1] = player_string_;
+				this->Clabyrinth_for_player_[this->Iy_][this->Ix_] = KNOWN_PLACE;
+				this->Ix_++;
 			}
 		}
 		break;
@@ -144,20 +154,20 @@ pair<int,int> Labyrinth::move_character(int arrow,int y,int x, int player)
 	system("cls");
 	this->print_labyrinth();
 	this->check();
-	return make_pair(this->y,this->x);
+	return make_pair(this->Iy_,this->Ix_);
 }
 bool Labyrinth::probeWay(int y,int x)
 {
 		//check if coordinates are in bounds of the labyrinth
-		if (y < 0 || y > this->solution_map.size() - 1 || x < 0 || x > this->solution_map[0].size() - 1) return false;
+		if (y < 0 || y > this->Csolution_map_.size() - 1 || x < 0 || x > this->Csolution_map_[0].size() - 1) return false;
 		
 		//we can not go here
-		if (this->solution_map[y][x] != POSSIBLE_WAY) return false;
+		if (this->Csolution_map_[y][x] != UNKNOWN_PLACE) return false;
 
-		this->solution_map[y][x] = SOLUTION_WAY;
+		this->Csolution_map_[y][x] = PLUS;
 
 		//we reached the end
-		if (y == this->win_point_y && x == this->win_point_x) {return true;}
+		if (y == this->Iwin_point_y_ && x == this->Iwin_point_x_) {return true;}
 
 		//try the surrounding possibilities
 		if (probeWay(y + 1, x) ||
@@ -166,24 +176,23 @@ bool Labyrinth::probeWay(int y,int x)
 			probeWay(y, x - 1))
 			return true;
 
-		this->solution_map[y][x] = POSSIBLE_WAY;
+		this->Csolution_map_[y][x] = UNKNOWN_PLACE;
 
 		return false;
 }
 Labyrinth::Labyrinth(int rows, int cols,int count_players)
 {	
-	
-	this->rows = rows;
-	this->cols = cols;
-	this->labyrinth_for_player.resize(this->rows, vector<string>(this->cols, "*"));
-	this->win_point_y = this->rows / 2; 
-	this->win_point_x = this->cols / 2;
-	this->labyrinth_for_player[this->win_point_y][this->win_point_x] = "+";
-	this->labyrinth_for_player[this->y][this->x] = "1";
-	if (count_players == 2) { this->labyrinth_for_player[this->rows - 1][this->x] = "2"; }
+	this->Irows_ = rows;
+	this->Icols_ = cols;
+	this->Clabyrinth_for_player_.resize(this->Irows_, vector<unsigned char>(this->Icols_, UNKNOWN_PLACE));
+	this->Iwin_point_y_ = this->Irows_ / 2; 
+	this->Iwin_point_x_ = this->Icols_ / 2;
+	this->Clabyrinth_for_player_[this->Iwin_point_y_][this->Iwin_point_x_] = PLUS;
+	this->Clabyrinth_for_player_[this->Iy_][this->Ix_] = FIRST_PLAYER;
+	if (count_players == 2) { this->Clabyrinth_for_player_[this->Irows_ - 1][this->Ix_] = SECOND_PLAYER; }
 	this->print_labyrinth();
 	this->fill_labyrinth();
-	this->solution_map = this->real_labyrinth;
-	while (!this->probeWay(this->rows - 1, 0)){this->fill_labyrinth();}
+	this->Csolution_map_ = this->Creal_labyrinth_;
+	while (!this->probeWay(this->Irows_ - 1, 0)){this->fill_labyrinth();}
 }
 Labyrinth::~Labyrinth(){}

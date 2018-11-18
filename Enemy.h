@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <string>
 using namespace std;
 class Enemy
 {
@@ -9,13 +8,13 @@ public:
 	int get_x();
 	int get_y();
 	int choose_side();
-	void getMap(vector<vector<string>> map);
+	void getMap(vector<vector<unsigned char>> map);
 	void getSolutionMap();
 	Enemy( int y, int x);
 	~Enemy();
 private:
-	int y;
-	int x;
-	vector<vector<string>> solution_map;
+	unsigned int Iy_=0;
+	unsigned int Ix_=0;
+	vector<vector<unsigned char>> Csolution_map;
 };
 
